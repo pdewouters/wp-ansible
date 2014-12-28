@@ -1,0 +1,35 @@
+---
+- name: add nginx repository
+  apt_repository: repo='ppa:nginx/stable' state=present
+  register: ppastable
+
+- name: install nginx
+  apt: pkg=nginx state=installed update_cache=yes
+  when: ppastable|success
+  register: nginxinstalled
+  notify: 
+    - start nginx
+
+- name: delete default nginx.conf
+  file: dest=/etc/nginx/nginx.conf state=absent
+
+- name: add our custom nginx.conf
+  copy: src=nginx.conf dest=/etc/nginx/nginx.conf mode=0644 group=root owner=root
+
+- name: disable default site
+  when: nginxinstalled|success
+  file: dest=/etc/nginx/sites-enabled/default state=absent
+
+- name: add our site config
+  when: nginxinstalled|success
+  register: wpms
+  template: src=wpms.j2 dest=/etc/nginx/sites-available/wpms owner=root group=root
+
+- name: enable site config
+  when: wpms|success
+  file: src=/etc/nginx/sites-available/wpms dest=/etc/nginx/sites-enabled/wpms state=link
+
+- name: create web root
+  when: nginxinstalled|success
+  file: dest=/srv/www/wpms mode=755 state=directory owner=www-data group=www-data recurse=yes
+  notify: reload nginx  

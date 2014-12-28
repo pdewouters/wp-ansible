@@ -1,0 +1,10 @@
+---
+- hosts: all
+  sudo: yes
+
+  roles:
+    - common
+    - nginx
+    - mariadb
+    - php
+    - wp-cli

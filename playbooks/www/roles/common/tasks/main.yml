@@ -1,0 +1,12 @@
+---
+- name: Install common software
+  apt: pkg={{ item }} update_cache=yes
+  with_items:
+     - curl
+     - wget
+     - unzip
+     - git
+     - htop
+     - vim
+     - tmux
+     - software-properties-common

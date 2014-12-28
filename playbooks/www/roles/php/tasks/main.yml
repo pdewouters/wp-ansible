@@ -1,0 +1,22 @@
+---
+- name: add repository
+  apt_repository: repo='ppa:ondrej/php5' update_cache=true
+
+- name: install php packages
+  apt: name={{ item }} state=latest update_cache=true
+  with_items:
+     - php5-fpm
+     - php5-gd
+     - php5-mysql
+     - php5-json
+     - php5-memcached
+     - memcached
+     - php5-mcrypt
+     - php5-curl
+     - php5-cli
+     - php-apc
+     - php5-imagick
+     - libssh2-php
+     - php5-intl
+     - php5-xdebug
+  notify: restart php5-fpm

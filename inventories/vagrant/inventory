@@ -1,0 +1,1 @@
+default ansible_ssh_host=192.168.22.10 db_root_password=devpassword

@@ -1,0 +1,58 @@
+---
+- name: add the apt key
+  apt_key: keyserver=keyserver.ubuntu.com id=0xcbcb082a1bb943db
+
+- name: add mariadb repository
+  apt_repository: "repo='deb http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.0/ubuntu {{ansible_distribution_release}} main' state=present update_cache=yes"
+
+- name: Install MariaDB package
+  apt: pkg={{ item }} state=present
+  with_items:
+   - mariadb-server
+   - mariadb-client
+   - mysqltuner
+   - python-mysqldb
+
+- name: update MariaDB root password for all root accounts
+  mysql_user: name=root
+              password="{{ db_root_password }}"
+              check_implicit_admin=yes
+              login_user=root
+              login_password="{{ db_root_password }}"
+              state=present
+  with_items:
+   - "{{ ansible_hostname }}"
+   - 127.0.0.1
+   - ::1
+   - localhost
+
+- name: Start MariaDB Service
+  #service: name={{ db_engine }} state=started enabled=true
+  service: name=mysql state=started enabled=true
+
+- name: Delete anonymous MySQL server user for current hostname
+  mysql_user: user=""
+              host="{{ ansible_hostname }}"
+              state=absent
+              login_user=root
+              login_password="{{ db_root_password }}"
+
+- name: Delete anonymous MySQL server user for localhost
+  mysql_user: user=""
+              state=absent
+              login_user=root
+              login_password="{{ db_root_password }}"
+
+- name: Remove the test database
+  mysql_db: name=test
+            state=absent
+            login_user=root
+            login_password="{{ db_root_password }}"
+
+- name: create wordpress db user
+  mysql_user: user="wp_user"
+              password="{{ db_root_password }}"
+              host="{{ ansible_hostname }}"
+              state=present
+              login_user=root
+              login_password="{{ db_root_password }}"

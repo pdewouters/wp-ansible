@@ -1,0 +1,6 @@
+---
+- name: install wp-cli
+  get_url: url=https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar dest=/usr/local/bin/wp
+
+- name: make executable
+  command: chmod +x /usr/local/bin/wp

@@ -1,0 +1,25 @@
+server {
+    listen [::]:80 ipv6only=off;
+    server_name paulwp.dev *.paulwp.dev;
+
+    root /srv/www/wordpress;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args ;
+    }
+
+    location ~ /favicon.ico {
+        access_log off;
+        log_not_found off;
+    }
+
+    location ~ \.php$ {
+        try_files $uri /index.php;
+        include fastcgi_params;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+    }
+
+    access_log  /var/log/nginx/$host-access.log;
+    error_log   /var/log/nginx/error.log;
+}
