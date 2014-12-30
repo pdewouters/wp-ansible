@@ -1,1 +1,0 @@
-{"virtualbox":{"/srv/www/wpms":{"guestpath":"/srv/www/wpms","hostpath":"/Users/pauldewouters/paulwp.dev","disabled":false},"/vagrant":{"guestpath":"/vagrant","hostpath":"/Users/pauldewouters/wp-ansible","disabled":false}}}
