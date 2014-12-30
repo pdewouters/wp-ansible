@@ -19,4 +19,6 @@
      - libssh2-php
      - php5-intl
      - php5-xdebug
-  notify: restart php5-fpm
+
+- name: start php fpm service
+  service: name=php5-fpm state=started enabled=true

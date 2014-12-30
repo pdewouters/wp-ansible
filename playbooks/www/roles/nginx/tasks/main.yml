@@ -29,7 +29,16 @@
   when: wpms|success
   file: src=/etc/nginx/sites-available/wpms dest=/etc/nginx/sites-enabled/wpms state=link
 
+- name: create alt logs directory
+  file: path=/usr/share/nginx/logs state=directory owner={{ ansible_env.SUDO_USER }} group={{ ansible_env.SUDO_USER }} mode=755
+
+- name: set owner of log files
+  file: path={{ item }} state=touch owner={{ ansible_env.SUDO_USER }} group={{ ansible_env.SUDO_USER }} mode=644
+  with_items:
+    - /usr/share/nginx/logs/error.log
+    - /usr/share/nginx/logs/access.log
+
 - name: create web root
   when: nginxinstalled|success
-  file: dest=/srv/www/wpms mode=755 state=directory owner=www-data group=www-data recurse=yes
-  notify: reload nginx  
+  file: dest=/srv/www/wpms mode=755 state=directory owner={{ ansible_env.SUDO_USER }} group={{ ansible_env.SUDO_USER }} recurse=yes
+  notify: reload nginx

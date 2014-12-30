@@ -1,25 +1,38 @@
 server {
-    listen [::]:80 ipv6only=off;
-    server_name paulwp.dev *.paulwp.dev;
+    listen 80;
 
-    root /srv/www/wordpress;
-    index index.php index.html index.htm;
+    server_name paulwp.dev;
+    access_log  /var/log/nginx/access.log main;
 
-    location / {
-        try_files $uri $uri/ /index.php?$args ;
+    root /var/www/wpms;
+    index index.html index.htm index.php;
+
+    location ~ \.(jpe?g|gif|png|css|bmp|js|ico)$ {
+        expires 30d;
     }
 
-    location ~ /favicon.ico {
-        access_log off;
-        log_not_found off;
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root /var/www/nginx-default;
+    }
+
+    location ~ /\.ht[a-z]+$ {
+        deny all;
     }
 
     location ~ \.php$ {
-        try_files $uri /index.php;
-        include fastcgi_params;
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
         fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
     }
 
-    access_log  /var/log/nginx/$host-access.log;
-    error_log   /var/log/nginx/error.log;
 }
