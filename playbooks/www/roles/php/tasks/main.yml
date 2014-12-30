@@ -20,5 +20,8 @@
      - php5-intl
      - php5-xdebug
 
+- name: add our www.conf file
+  template: src=www.conf.j2 dest=/etc/php5/fpm/pool.d/www.conf owner={{ ansible_env.SUDO_USER}} group={{ ansible_env.SUDO_USER}}
+
 - name: start php fpm service
   service: name=php5-fpm state=started enabled=true
